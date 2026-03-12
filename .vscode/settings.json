@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.inc": "makefile"
+    },
+    "[makefile]": {
+        "editor.formatOnSave": false
+    }
+}
