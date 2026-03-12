@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/maximesavy/Desktop/ETUDES/ENSTA/COURS/P2/OS02/OS02_Projet_Fourmi/src",
+      "program": "/Users/maximesavy/Desktop/ETUDES/ENSTA/COURS/P2/OS02/OS02_Projet_Fourmi/src/build/Debug/outDebug"
+    }
+  ]
+}
