@@ -9,7 +9,7 @@ else
 endif
 
 # Use += so we don't wipe out the SDL flags from Make_osx.inc
-CXXFLAGS += -std=c++17
+CXXFLAGS += -std=c++17 -fopenmp
 
 ifdef DEBUG
     # Use $(CXXFLAGS) here to carry over the SDL flags
@@ -19,7 +19,7 @@ else
     CXXFLAGS2 = $(CXXFLAGS) -O3 -march=native -Wall 
 endif
 
-ALL= ant_simu.exe , ant_simu_vect.exe
+ALL= ant_simu.exe ant_simu_vect.exe
 
 default:	help
 
@@ -34,7 +34,7 @@ clean:
 ant_simu.exe : ant.o fractal_land.o renderer.o window.o ant_simu.o
 	$(CXX) $(CXXFLAGS2) $^ -o $@ $(LIB)	
 
-ant_simu_vect.exe : ant_vect.o fractal_land.o renderer.o window.o ant_simu_vect.o
+ant_simu_vect.exe : ant_vect.o fractal_land.o renderer_vect.o window.o ant_simu_vect.o
 	$(CXX) $(CXXFLAGS2) $^ -o $@ $(LIB)	
 
 help:

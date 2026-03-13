@@ -5,7 +5,7 @@
 #include "fractal_land.hpp"
 #include "ant_vect.hpp"
 #include "pheronome.hpp"
-#include "renderer.hpp"
+#include "renderer_vect.hpp"
 #include "window.hpp"
 #include "rand_generator.hpp"
 
@@ -18,7 +18,6 @@ int main(int nargs, char *argv[])
     double time_ants = 0, time_phen = 0, time_render = 0;
     int frame_count = 0;
     SDL_Init(SDL_INIT_VIDEO);
-    std::size_t seed = 2026;  // Graine pour la génération aléatoire ( reproductible )
     const int nb_ants = 5000; // Nombre de fourmis
     const double eps = 0.8;   // Coefficient d'exploration
     const double alpha = 0.7; // Coefficient de chaos
@@ -60,7 +59,7 @@ int main(int nargs, char *argv[])
     // On crée toutes les fourmis dans la fourmilière.
     pheronome phen(land.dimensions(), pos_food, pos_nest, alpha, beta);
     Window win("Ant Simulation", 2 * land.dimensions() + 10, land.dimensions() + 266);
-    Renderer renderer(land, phen, pos_nest, pos_food, ants);
+    RendererVect renderer(land, phen, pos_nest, pos_food, theAnts);
 
     // Compteur de la quantité de nourriture apportée au nid par les fourmis
     size_t food_quantity = 0;
@@ -80,8 +79,7 @@ int main(int nargs, char *argv[])
 
         // avancement des fourmis
         auto t1 = steady_clock::now();
-        for (size_t i = 0; i < ants.size(); ++i)
-            ants[i].advance(phen, land, pos_food, pos_nest, food_quantity);
+        advance_Vect(theAnts,phen,land, pos_food, pos_nest, food_quantity);
         auto t2 = steady_clock::now();
 
         // mise a jour phéromones
@@ -103,11 +101,11 @@ int main(int nargs, char *argv[])
         // affichage des stats toutes les 100 frames
         if (frame_count == 100)
         {
-            std::cout << "-- Stats sur 100 itérations --" << std::endl;
-            std::cout << "Mouvement Fourmis : " << (time_ants / 100.0) / 1000.0 << std::endl;
-            std::cout << "Phéromones (Evap/Upd): " << (time_phen / 100.0) / 1000.0 << std::endl;
-            std::cout << "Rendu SDL : " << (time_render / 100.0) / 1000.0 << std::endl;
-            std::cout << "Total : " << ((time_ants + time_phen + time_render) / 100.0) / 1000.0 << std::endl;
+            std::cout << "-- Stats de durée sur 100 itérations --" << std::endl;
+            std::cout << "Mouvement Fourmis : " << (time_ants / 100.0) / 1000.0 <<" ms" << std::endl;
+            std::cout << "Phéromones (Evap/Upd): " << (time_phen / 100.0) / 1000.0 << " ms" << std::endl;
+            std::cout << "Rendu SDL : " << (time_render / 100.0) / 1000.0 << " ms" << std::endl;
+            std::cout << "Total : " << ((time_ants + time_phen + time_render) / 100.0) / 1000.0 << " ms" << std::endl;
 
             // Reset
             time_ants = time_phen = time_render = 0;
