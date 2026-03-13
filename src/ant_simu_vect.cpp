@@ -19,7 +19,7 @@ int main(int nargs, char *argv[])
     double time_ants = 0, time_phen = 0, time_render = 0;
     int frame_count = 0;
     SDL_Init(SDL_INIT_VIDEO);
-    const int nb_ants = 100000; // Nombre de fourmis
+    const int nb_ants = 5000; // Nombre de fourmis
     const double eps = 0.8;     // Coefficient d'exploration
     const double alpha = 0.7;   // Coefficient de chaos
     // const double beta=0.9999; // Coefficient d'évaporation
