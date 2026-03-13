@@ -10,6 +10,7 @@
 #include "rand_generator.hpp"
 
 using namespace std::chrono;
+using namespace std;
 
 int main(int nargs, char *argv[])
 {
@@ -18,9 +19,9 @@ int main(int nargs, char *argv[])
     double time_ants = 0, time_phen = 0, time_render = 0;
     int frame_count = 0;
     SDL_Init(SDL_INIT_VIDEO);
-    const int nb_ants = 5000; // Nombre de fourmis
-    const double eps = 0.8;   // Coefficient d'exploration
-    const double alpha = 0.7; // Coefficient de chaos
+    const int nb_ants = 100000; // Nombre de fourmis
+    const double eps = 0.8;     // Coefficient d'exploration
+    const double alpha = 0.7;   // Coefficient de chaos
     // const double beta=0.9999; // Coefficient d'évaporation
     const double beta = 0.999; // Coefficient d'évaporation
     // Location du nid
@@ -79,7 +80,7 @@ int main(int nargs, char *argv[])
 
         // avancement des fourmis
         auto t1 = steady_clock::now();
-        advance_Vect(theAnts,phen,land, pos_food, pos_nest, food_quantity);
+        advance_Vect(theAnts, phen, land, pos_food, pos_nest, food_quantity);
         auto t2 = steady_clock::now();
 
         // mise a jour phéromones
@@ -102,7 +103,7 @@ int main(int nargs, char *argv[])
         if (frame_count == 100)
         {
             std::cout << "-- Stats de durée sur 100 itérations --" << std::endl;
-            std::cout << "Mouvement Fourmis : " << (time_ants / 100.0) / 1000.0 <<" ms" << std::endl;
+            std::cout << "Mouvement Fourmis : " << (time_ants / 100.0) / 1000.0 << " ms" << std::endl;
             std::cout << "Phéromones (Evap/Upd): " << (time_phen / 100.0) / 1000.0 << " ms" << std::endl;
             std::cout << "Rendu SDL : " << (time_render / 100.0) / 1000.0 << " ms" << std::endl;
             std::cout << "Total : " << ((time_ants + time_phen + time_render) / 100.0) / 1000.0 << " ms" << std::endl;
