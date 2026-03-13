@@ -1,5 +1,6 @@
 #include <limits>
 #include <algorithm>
+#include <omp.h>
 #include "renderer_vect.hpp"
 
 RendererVect::RendererVect( const fractal_land& land, const pheronome& phen, 
@@ -31,6 +32,8 @@ void RendererVect::display( Window& win, std::size_t const& compteur )
                                                           0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
         
         double min_height{std::numeric_limits<double>::max()}, max_height{std::numeric_limits<double>::lowest()};
+        
+        #pragma omp parallel for
         for ( fractal_land::dim_t i = 0; i < m_ref_land.dimensions( ); ++i )
             for ( fractal_land::dim_t j = 0; j < m_ref_land.dimensions( ); ++j ) {
                 min_height = std::min( min_height, m_ref_land( i, j ) );
@@ -38,6 +41,7 @@ void RendererVect::display( Window& win, std::size_t const& compteur )
             }
         
         // Construction de l'image du paysage
+        #pragma omp parallel for
         for ( fractal_land::dim_t i = 0; i < m_ref_land.dimensions( ); ++i )
             for ( fractal_land::dim_t j = 0; j < m_ref_land.dimensions( ); ++j ) {
                 double c = 255. * ( m_ref_land( i, j ) - min_height ) / ( max_height - min_height );

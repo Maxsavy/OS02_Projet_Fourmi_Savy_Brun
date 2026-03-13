@@ -9,7 +9,7 @@ else
 endif
 
 # Use += so we don't wipe out the SDL flags from Make_osx.inc
-CXXFLAGS += -std=c++17 -fopenmp
+CXXFLAGS += -std=c++17 -fopenmp -O3
 
 ifdef DEBUG
     # Use $(CXXFLAGS) here to carry over the SDL flags

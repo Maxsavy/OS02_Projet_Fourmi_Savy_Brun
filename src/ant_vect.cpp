@@ -8,7 +8,7 @@ void advance_Vect(VectorOfAnts& MyVector, pheronome& phen, const fractal_land& l
     
     // On utilise OpenMP pour paralléliser la boucle de calcul des fourmis
     // reduction(+:cpteur_food) permet de cumuler les résultats de chaque thread en toute sécurité
-    //#pragma omp parallel for reduction(+:cpteur_food)
+    #pragma omp parallel for reduction(+:cpteur_food) schedule(dynamic, 64)
     for (std::size_t i = 0; i < nb_ants; ++i) {
         
         double consumed_time = 0.0;
@@ -53,7 +53,6 @@ void advance_Vect(VectorOfAnts& MyVector, pheronome& phen, const fractal_land& l
 
             // Mise à jour de la fourmi et de l'environnement
             consumed_time += land(new_pos.x, new_pos.y); // Coût de déplacement selon le terrain
-            phen.mark_pheronome(new_pos); // La fourmi dépose ses phéromones
             MyVector.pos_x[i] = new_pos.x;
             MyVector.pos_y[i] = new_pos.y;
 
@@ -66,5 +65,9 @@ void advance_Vect(VectorOfAnts& MyVector, pheronome& phen, const fractal_land& l
                 MyVector.states[i] = 1; // Devient "chargée"
             }
         }
+    }
+    //On sépare la pose des phéromones pour éviter un problème d'accès à la mémoire partagée et de verrous intempestifs
+    for (std::size_t i = 0; i < nb_ants; ++i) {
+        phen.mark_pheronome({MyVector.pos_x[i], MyVector.pos_y[i]}); // La fourmi dépose ses phéromones
     }
 }
