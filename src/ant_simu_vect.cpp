@@ -3,7 +3,7 @@
 #include <random>
 #include <chrono>
 #include "fractal_land.hpp"
-#include "ant.hpp"
+#include "ant_vect.hpp"
 #include "pheronome.hpp"
 #include "renderer.hpp"
 #include "window.hpp"
@@ -52,15 +52,10 @@ int main(int nargs, char *argv[])
 
     // FOURMIS :
     // Définition du coefficient d'exploration de toutes les FOURMIS.
-    ant::set_exploration_coef(eps);
 
     // On va créer des fourmis un peu partout sur la carte :
-    std::vector<ant> ants;
-    ants.reserve(nb_ants);
-    auto gen_ant_pos = [&land, &seed]()
-    { return rand_int32(0, land.dimensions() - 1, seed); };
-    for (size_t i = 0; i < nb_ants; ++i)
-        ants.emplace_back(position_t{gen_ant_pos(), gen_ant_pos()}, seed);
+    VectorOfAnts theAnts(eps, nb_ants);
+    theAnts.gen_Ants_pos(land);
 
     // On crée toutes les fourmis dans la fourmilière.
     pheronome phen(land.dimensions(), pos_food, pos_nest, alpha, beta);

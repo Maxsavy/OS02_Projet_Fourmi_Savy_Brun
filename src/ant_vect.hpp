@@ -2,6 +2,7 @@
 
 #include <iostream>
 # include <utility>
+#include <random>
 # include "pheronome.hpp"
 # include "fractal_land.hpp"
 # include "basic_types.hpp"
@@ -9,20 +10,43 @@
 
 class VectorOfAnts {    //Chaque fourmie peut être déterminée à partir d'un indice dans cette classe
     public :
+        VectorOfAnts(double eps, int n) : m_eps(eps), numbAnts(n) {
+            pos_x.resize(n);
+            pos_y.resize(n);
+            states.assign(n, 0);        //toutes les fourmis commencent non chargées
+            seeds.resize(n);
+            consumed_time.assign(n, 0); 
+            std::mt19937 master_gen(2026); // Générateur maître
+            for (size_t i = 0; i < numbAnts; ++i) {
+                // Chaque fourmi reçoit une graine de départ différente
+                seeds[i] = master_gen(); 
+            }
+        }
         std::vector<int> pos_x;  //vecteur des positions des fourmies
         std::vector<int> pos_y;
         std::vector<int> states;  //vecteur des états des fourmies (chargée ou non) (1 si oui, 0 sinon)
         std::vector<uint32_t> seeds; //la graine qui détermine le hasard pour chaque fourmie
         std::vector<double> consumed_time;
+        double m_eps;      // Coefficient d'exploration commun à toutes les fourmis.
+        int numbAnts;
+
+        void gen_Ants_pos(const fractal_land &land) {
+            
+            std::transform(seeds.begin(), seeds.end(), pos_x.begin(), [&land](uint32_t& seed) {
+                return rand_int32(0, land.dimensions()-1, seed);
+            });
+            std::transform(seeds.begin(), seeds.end(), pos_y.begin(), [&land](uint32_t& seed) {
+                return rand_int32(0, land.dimensions()-1, seed);
+            });
+        }
 };
 
-double m_eps = 0.;  // Coefficient d'exploration commun à toutes les fourmis.
 
 void advance_Vect(VectorOfAnts& MyVector, pheronome& phen, const fractal_land& land, 
                   const position_t& pos_food, const position_t& pos_nest, std::size_t& cpteur_food) 
 {
     const size_t nb_ants = MyVector.pos_x.size();
-    const double eps = m_eps; // On utilise la constante locale pour faciliter la vectorisation
+    const double eps =MyVector.m_eps; // On utilise la constante locale pour faciliter la vectorisation
     
     // On utilise OpenMP pour paralléliser la boucle de calcul des fourmis
     // reduction(+:cpteur_food) permet de cumuler les résultats de chaque thread en toute sécurité
@@ -70,18 +94,18 @@ void advance_Vect(VectorOfAnts& MyVector, pheronome& phen, const fractal_land& l
             }
 
             // Mise à jour de la fourmi et de l'environnement
-            consumed_time += land(new_pos.x, new_pos.y); // Coût de déplacement selon le terrain [cite: 41, 53]
-            phen.mark_pheronome(new_pos); // La fourmi dépose ses phéromones [cite: 29]
+            consumed_time += land(new_pos.x, new_pos.y); // Coût de déplacement selon le terrain
+            phen.mark_pheronome(new_pos); // La fourmi dépose ses phéromones
             MyVector.pos_x[i] = new_pos.x;
             MyVector.pos_y[i] = new_pos.y;
 
-            // Vérification des objectifs (Nid ou Nourriture) [cite: 18, 19, 21]
+            // Vérification des objectifs (Nid ou Nourriture)
             if (new_pos.x == pos_nest.x && new_pos.y == pos_nest.y) {
-                if (MyVector.states[i] == 1) cpteur_food += 1; // [cite: 21]
-                MyVector.states[i] = 0; // Devient "non chargée" [cite: 19]
+                if (MyVector.states[i] == 1) cpteur_food += 1; //
+                MyVector.states[i] = 0; // Devient "non chargée"
             }
             if (new_pos.x == pos_food.x && new_pos.y == pos_food.y) {
-                MyVector.states[i] = 1; // Devient "chargée" [cite: 18]
+                MyVector.states[i] = 1; // Devient "chargée"
             }
         }
     }
