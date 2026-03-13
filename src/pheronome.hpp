@@ -82,6 +82,19 @@ public:
         }
     }
 
+    std::vector<pheronome_t> &raw_map() { return m_map_of_pheronome; }
+    const std::vector<pheronome_t> &raw_map() const { return m_map_of_pheronome; }
+
+    void do_evaporation_mpi()
+    {
+        for (std::size_t i = 1; i <= m_dim; ++i)
+            for (std::size_t j = 1; j <= m_dim; ++j)
+            {
+                m_buffer_pheronome[i * m_stride + j][0] *= m_beta;
+                m_buffer_pheronome[i * m_stride + j][1] *= m_beta;
+            }
+    }
+
     void mark_pheronome(const position_t &pos)
     {
         std::size_t i = pos.x;

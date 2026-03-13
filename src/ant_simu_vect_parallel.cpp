@@ -179,7 +179,7 @@ int main(int nargs, char *argv[])
         }
 
         // retour aux fonctions de base
-        phen.do_evaporation();
+        phen.do_evaporation_mpi();
         phen.update();
         auto t4 = steady_clock::now();
 
