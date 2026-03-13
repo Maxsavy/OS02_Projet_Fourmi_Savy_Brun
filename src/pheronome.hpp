@@ -1,5 +1,6 @@
 #ifndef _PHERONOME_HPP_
 #define _PHERONOME_HPP_
+#include <omp.h>
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -67,17 +68,18 @@ public:
         return m_map_of_pheronome[index(pos)];
     }
 
-    std::vector<pheronome_t> &raw_map() { return m_map_of_pheronome; }
-    const std::vector<pheronome_t> &raw_map() const { return m_map_of_pheronome; }
-
     void do_evaporation()
     {
-        for (std::size_t i = 1; i <= m_dim; ++i)
-            for (std::size_t j = 1; j <= m_dim; ++j)
-            {
-                m_buffer_pheronome[i * m_stride + j][0] *= m_beta;
-                m_buffer_pheronome[i * m_stride + j][1] *= m_beta;
-            }
+        const std::size_t total_cells = m_buffer_pheronome.size();
+        const double beta = m_beta; // Copie locale pour faciliter le travail du compilateur
+// Le mot-clé 'simd' force l'utilisation des registres XMM/YMM (AVX)
+#pragma omp parallel for simd schedule(static)
+        for (std::size_t k = 0; k < total_cells; ++k)
+        {
+            // Le compilateur va grouper ces opérations par paquets de 4 ou 8
+            m_buffer_pheronome[k][0] *= beta;
+            m_buffer_pheronome[k][1] *= beta;
+        }
     }
 
     void mark_pheronome(const position_t &pos)
